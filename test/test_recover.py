@@ -1,4 +1,5 @@
 import unittest
+import numpy as np
 
 from src.recover import recover_parameters
 from src.simulate import simulate_data

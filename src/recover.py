@@ -1,3 +1,4 @@
+from src.simulate import simulate_data
 import numpy as np
 from scipy.optimize import minimize
 
