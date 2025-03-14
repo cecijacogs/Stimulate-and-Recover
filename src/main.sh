@@ -21,38 +21,53 @@ for N in 10 40 4000; do
         
         # Run the simulation and recovery scripts
         python3 src/simulate.py --N $N
-        python3 src/recover.py --N $N
-        
-        # Capture the simulated and recovered parameters
-        simulated_a=$(awk -F',' -v N=$N 'NR>1 && $1==N {print $2}' results/summary.csv | tail -1)
-        simulated_v=$(awk -F',' -v N=$N 'NR>1 && $1==N {print $3}' results/summary.csv | tail -1)
-        simulated_t=$(awk -F',' -v N=$N 'NR>1 && $1==N {print $4}' results/summary.csv | tail -1)
-        
-        recovered_a=$(awk -F',' -v N=$N 'NR>1 && $1==N {print $5}' results/summary.csv | tail -1)
-        recovered_v=$(awk -F',' -v N=$N 'NR>1 && $1==N {print $6}' results/summary.csv | tail -1)
-        recovered_t=$(awk -F',' -v N=$N 'NR>1 && $1==N {print $7}' results/summary.csv | tail -1)
-        
-        # Debugging: Print extracted values
-        echo "Simulated a: $simulated_a, Recovered a: $recovered_a"
-        echo "Simulated v: $simulated_v, Recovered v: $recovered_v"
-        echo "Simulated t: $simulated_t, Recovered t: $recovered_t"
-        
-        # Handle empty values
-        if [[ -z "$simulated_a" || -z "$simulated_v" || -z "$simulated_t" || -z "$recovered_a" || -z "$recovered_v" || -z "$recovered_t" ]]; then
-            echo "Warning: Missing values for N=$N, Iteration=$i. Skipping..."
-            continue
-        fi
-        
+        python3 src/recover.py --N $N  
+
+        # Capture the latest simulated and recovered parameters
+        last_row=$(tail -1 results/summary.csv)
+
+        # Extract values from the last row safely
+        simulated_a=$(echo "$last_row" | awk -F',' '{print $2}')
+        simulated_v=$(echo "$last_row" | awk -F',' '{print $3}')
+        simulated_t=$(echo "$last_row" | awk -F',' '{print $4}')
+        recovered_a=$(echo "$last_row" | awk -F',' '{print $5}')
+        recovered_v=$(echo "$last_row" | awk -F',' '{print $6}')
+        recovered_t=$(echo "$last_row" | awk -F',' '{print $7}')
+
+        # Handle missing values
+        simulated_a=${simulated_a:-"NA"}
+        simulated_v=${simulated_v:-"NA"}
+        simulated_t=${simulated_t:-"NA"}
+        recovered_a=${recovered_a:-"NA"}
+        recovered_v=${recovered_v:-"NA"}
+        recovered_t=${recovered_t:-"NA"}
+
         # Calculate bias and squared error
-        bias_a=$(echo "$recovered_a - $simulated_a" | bc 2>/dev/null || echo "NaN")
-        bias_v=$(echo "$recovered_v - $simulated_v" | bc 2>/dev/null || echo "NaN")
-        bias_t=$(echo "$recovered_t - $simulated_t" | bc 2>/dev/null || echo "NaN")
-        
-        squared_error_a=$(echo "($bias_a)^2" | bc 2>/dev/null || echo "NaN")
-        squared_error_v=$(echo "($bias_v)^2" | bc 2>/dev/null || echo "NaN")
-        squared_error_t=$(echo "($bias_t)^2" | bc 2>/dev/null || echo "NaN")
-        
-        # Append the results to the summary CSV
+        if [[ "$simulated_a" != "NA" && "$recovered_a" != "NA" ]]; then
+            bias_a=$(echo "$recovered_a - $simulated_a" | bc 2>/dev/null || echo "NA")
+            squared_error_a=$(echo "$bias_a^2" | bc 2>/dev/null || echo "NA")
+        else
+            bias_a="NA"
+            squared_error_a="NA"
+        fi
+
+        if [[ "$simulated_v" != "NA" && "$recovered_v" != "NA" ]]; then
+            bias_v=$(echo "$recovered_v - $simulated_v" | bc 2>/dev/null || echo "NA")
+            squared_error_v=$(echo "$bias_v^2" | bc 2>/dev/null || echo "NA")
+        else
+            bias_v="NA"
+            squared_error_v="NA"
+        fi
+
+        if [[ "$simulated_t" != "NA" && "$recovered_t" != "NA" ]]; then
+            bias_t=$(echo "$recovered_t - $simulated_t" | bc 2>/dev/null || echo "NA")
+            squared_error_t=$(echo "$bias_t^2" | bc 2>/dev/null || echo "NA")
+        else
+            bias_t="NA"
+            squared_error_t="NA"
+        fi
+
+        # Append formatted row to summary.csv
         echo "$N,$i,$bias_a,$bias_v,$bias_t,$squared_error_a,$squared_error_v,$squared_error_t" >> $results_file
     done
 done
