@@ -1,6 +1,11 @@
 import sys
 import os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
+
+# Add the project root to the Python path
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# Now import the simulate module
+from simulate import simulate_data
 
 import numpy as np
 import csv
@@ -8,7 +13,6 @@ import os
 import argparse
 
 from scipy.optimize import minimize
-from src.simulate import simulate_data
 
 # passes --N arugment for testing
 parser = argparse.ArgumentParser()
