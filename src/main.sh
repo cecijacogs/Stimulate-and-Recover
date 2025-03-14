@@ -13,9 +13,9 @@ for N in 10 40 4000; do
         # Print progress for each simulation
         echo "Running simulation for N=$N, Iteration=$i"
         
-        # Run the simulation and recovery scripts
+        # runs the simulation and recovery scripts
         python3 src/simulate.py --N $N
-        python3 src/recover.py
+        python3 src/recover.py --N $N
         
         # Capture the simulated and recovered parameters (modify these paths as needed)
         simulated_a=$(awk -F',' -v N=$N 'NR==1 && $1==N {print $2}' results/summary.csv)  # Simulated a value
