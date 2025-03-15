@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export LC_ALL=C
+
 # 'src' directory to the Python path
 export PYTHONPATH=$(pwd)/src:$PYTHONPATH
 
@@ -33,23 +35,22 @@ for N in 10 40 4000; do
         # reads the simulated parameters from the temporary file
         sim_file="$results_dir/simulated_params.csv"
         if [ -f "$sim_file" ]; then
-            simulated_a=$(tail -1 "$sim_file" | cut -d',' -f2)
-            simulated_v=$(tail -1 "$sim_file" | cut -d',' -f3)
-            simulated_t=$(tail -1 "$sim_file" | cut -d',' -f4)
+            simulated_a=$(tail -1 "$sim_file" | cut -d',' -f2 | tr -d '\r')
+            simulated_v=$(tail -1 "$sim_file" | cut -d',' -f3 | tr -d '\r')
+            simulated_t=$(tail -1 "$sim_file" | cut -d',' -f4 | tr -d '\r')
         else
             echo "Error: Simulated parameters file not found!"
             continue
         fi
         
-        # runs the recovery script (passing the parameters)
         python3 src/recover.py --N $N --a $simulated_a --v $simulated_v --t $simulated_t
         
         # reads the recovered parameters from the temporary file
         rec_file="$results_dir/recovered_params.csv"
         if [ -f "$rec_file" ]; then
-            recovered_a=$(tail -1 "$rec_file" | cut -d',' -f1)
-            recovered_v=$(tail -1 "$rec_file" | cut -d',' -f2)
-            recovered_t=$(tail -1 "$rec_file" | cut -d',' -f3)
+            recovered_a=$(tail -1 "$rec_file" | cut -d',' -f1 | tr -d '\r')
+            recovered_v=$(tail -1 "$rec_file" | cut -d',' -f2 | tr -d '\r')
+            recovered_t=$(tail -1 "$rec_file" | cut -d',' -f3 | tr -d '\r')
         else
             echo "Error: Recovered parameters file not found!"
             continue

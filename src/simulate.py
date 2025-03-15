@@ -72,7 +72,7 @@ def main():
     write_header = not os.path.exists(file_path) or os.stat(file_path).st_size == 0
 
     # writes parameters to the temporary CSV file
-    with open(file_path, mode='w', newline='') as file:
+    with open(file_path, mode='w', newline='\n') as file:
         writer = csv.writer(file)
         if write_header:
             writer.writerow(['N', 'a', 'v', 't'])
@@ -80,7 +80,7 @@ def main():
 
     # saves the simulated data to a file for recovery
     data_file_path = os.path.join(results_dir, f'simulated_data_N{args.N}.csv')
-    with open(data_file_path, mode='w', newline='') as file:
+    with open(data_file_path, mode='w', newline='\n') as file:
         writer = csv.writer(file)
         writer.writerow(['rt', 'acc'])
         for i in range(len(rt)):

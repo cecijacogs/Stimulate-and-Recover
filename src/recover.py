@@ -74,7 +74,7 @@ def main():
     # saves recovered parameters to a temporary file
     results_dir = os.path.join(os.getcwd(), 'results')
     rec_file_path = os.path.join(results_dir, 'recovered_params.csv')
-    with open(rec_file_path, mode='w', newline='') as file:
+    with open(rec_file_path, mode='w', newline='\n') as file:
         writer = csv.writer(file)
         writer.writerow([recovered_a, recovered_v, recovered_t])
 
