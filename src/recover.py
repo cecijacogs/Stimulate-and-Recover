@@ -67,9 +67,6 @@ except Exception as e:
 # uses the parameters passed directly via command line
 a, v, t = args.a, args.v, args.t
 
-# generates new simulated data using the passed parameters
-rt_sim, acc_sim = simulate_data(a, v, t, args.N)
-
 # recovers parameters from simulated data
 recovered_a, recovered_v, recovered_t = recover_parameters(rt, acc)
 
