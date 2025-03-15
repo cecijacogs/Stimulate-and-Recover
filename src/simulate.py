@@ -18,6 +18,7 @@ def simulate_data(a, v, t, N):
     - rt: Simulated response times
     - acc: Simulated accuracies (1 = correct, 0 = incorrect)
     """
+
     rt = []
     acc = []
     
@@ -34,7 +35,7 @@ def simulate_data(a, v, t, N):
             
         # variability
         decision_time += np.random.normal(0, 0.1)
-        total_rt = max(0.1, decision_time + t)  # ensures stimulated response times are positive
+        total_rt = max(0.1, decision_time + t)  # ensures simulated response times are positive
         
         rt.append(total_rt)
         acc.append(accuracy)
@@ -48,39 +49,42 @@ def generate_random_parameters():
     t = np.random.uniform(0.1, 0.5)  #random non-decision time
     return a, v, t
 
-# command-line arguments for N
-if __name__ == '__main__':
+def main():
+    # command-line arguments for N
     parser = argparse.ArgumentParser()
     parser.add_argument('--N', type=int, required=True, help="Number of trials")
     args = parser.parse_args()
 
-# random parameters
-a, v, t = generate_random_parameters()
+    # random parameters
+    a, v, t = generate_random_parameters()
 
-# simulates data
-rt, acc = simulate_data(a, v, t, args.N)
+    # simulates data
+    rt, acc = simulate_data(a, v, t, args.N)
 
-# directory for saving results
-results_dir = os.path.join(os.getcwd(), 'results')
-os.makedirs(results_dir, exist_ok=True)
+    # directory for saving results
+    results_dir = os.path.join(os.getcwd(), 'results')
+    os.makedirs(results_dir, exist_ok=True)
 
-# file path for temporary storage of simulated parameters
-file_path = os.path.join(results_dir, 'simulated_params.csv')
+    # file path for temporary storage of simulated parameters
+    file_path = os.path.join(results_dir, 'simulated_params.csv')
 
-# makes sure that headers are made -- only if the file is empty
-write_header = not os.path.exists(file_path) or os.stat(file_path).st_size == 0
+    # makes sure that headers are made -- only if the file is empty
+    write_header = not os.path.exists(file_path) or os.stat(file_path).st_size == 0
 
-# writes parameters to the temporary CSV file
-with open(file_path, mode='w', newline='') as file:
-    writer = csv.writer(file)
-    if write_header:
-        writer.writerow(['N', 'a', 'v', 't'])
-    writer.writerow([args.N, a, v, t])
+    # writes parameters to the temporary CSV file
+    with open(file_path, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        if write_header:
+            writer.writerow(['N', 'a', 'v', 't'])
+        writer.writerow([args.N, a, v, t])
 
-# saves the simulated data to a file for recovery
-data_file_path = os.path.join(results_dir, f'simulated_data_N{args.N}.csv')
-with open(data_file_path, mode='w', newline='') as file:
-    writer = csv.writer(file)
-    writer.writerow(['rt', 'acc'])
-    for i in range(len(rt)):
-        writer.writerow([rt[i], acc[i]])
+    # saves the simulated data to a file for recovery
+    data_file_path = os.path.join(results_dir, f'simulated_data_N{args.N}.csv')
+    with open(data_file_path, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(['rt', 'acc'])
+        for i in range(len(rt)):
+            writer.writerow([rt[i], acc[i]])
+
+if __name__ == '__main__':
+    main()

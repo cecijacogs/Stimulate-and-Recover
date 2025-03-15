@@ -13,7 +13,6 @@ import argparse
 from scipy.optimize import minimize
 
 def recover_parameters(rt, acc):
-
     """
     Recover the parameters (a, v, t) from the simulated data.
     
@@ -44,7 +43,7 @@ def recover_parameters(rt, acc):
     
     return result.x  # returns recovered [a, v, t] values
 
-if __name__ == '__main__':
+def main():
     # argument parser to accept simulation parameters in recover.py
     parser = argparse.ArgumentParser()
     parser.add_argument('--N', type=int, required=True, help="Number of trials")
@@ -81,3 +80,7 @@ if __name__ == '__main__':
 
     print(f"Original parameters: a={args.a}, v={args.v}, t={args.t}")
     print(f"Recovered parameters: a={recovered_a}, v={recovered_v}, t={recovered_t}")
+
+if __name__ == '__main__':
+    main()
+    
