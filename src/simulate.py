@@ -49,9 +49,10 @@ def generate_random_parameters():
     return a, v, t
 
 # command-line arguments for N
-parser = argparse.ArgumentParser()
-parser.add_argument('--N', type=int, required=True, help="Number of trials")
-args = parser.parse_args()
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--N', type=int, required=True, help="Number of trials")
+    args = parser.parse_args()
 
 # random parameters
 a, v, t = generate_random_parameters()

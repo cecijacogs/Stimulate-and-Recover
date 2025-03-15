@@ -3,7 +3,7 @@ import os
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from simulate import simulate_data
+from src.simulate import simulate_data
 
 import numpy as np
 import csv
@@ -11,14 +11,6 @@ import os
 import argparse
 
 from scipy.optimize import minimize
-
-# update the argument parser to accept simulation parameters in recover.py
-parser = argparse.ArgumentParser()
-parser.add_argument('--N', type=int, required=True, help="Number of trials")
-parser.add_argument('--a', type=float, required=True, help="Simulated boundary separation")
-parser.add_argument('--v', type=float, required=True, help="Simulated drift rate")
-parser.add_argument('--t', type=float, required=True, help="Simulated non-decision time")
-args = parser.parse_args()
 
 def recover_parameters(rt, acc):
 
@@ -31,6 +23,7 @@ def recover_parameters(rt, acc):
     
     Returns:
     - recovered_a, recovered_v, recovered_t: Estimated parameters
+    
     """
 
     def loss_function(params):
@@ -51,31 +44,40 @@ def recover_parameters(rt, acc):
     
     return result.x  # returns recovered [a, v, t] values
 
-# loads the simulated data
-data_file_path = os.path.join(os.getcwd(), 'results', f'simulated_data_N{args.N}.csv')
-try:
-    with open(data_file_path, mode='r') as file:
-        reader = csv.reader(file)
-        next(reader)  # skips header
-        data = list(reader)
-        rt = np.array([float(row[0]) for row in data])
-        acc = np.array([int(row[1]) for row in data])
-except Exception as e:
-    print(f"Error loading data: {e}")
-    sys.exit(1)
+if __name__ == '__main__':
+    # argument parser to accept simulation parameters in recover.py
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--N', type=int, required=True, help="Number of trials")
+    parser.add_argument('--a', type=float, required=True, help="Simulated boundary separation")
+    parser.add_argument('--v', type=float, required=True, help="Simulated drift rate")
+    parser.add_argument('--t', type=float, required=True, help="Simulated non-decision time")
+    args = parser.parse_args()
 
-# uses the parameters passed directly via command line
-a, v, t = args.a, args.v, args.t
+    # loads the simulated data
+    data_file_path = os.path.join(os.getcwd(), 'results', f'simulated_data_N{args.N}.csv')
+    try:
+        with open(data_file_path, mode='r') as file:
+            reader = csv.reader(file)
+            next(reader)  # skips header
+            data = list(reader)
+            rt = np.array([float(row[0]) for row in data])
+            acc = np.array([int(row[1]) for row in data])
+    except Exception as e:
+        print(f"Error loading data: {e}")
+        sys.exit(1)
 
-# recovers parameters from simulated data
-recovered_a, recovered_v, recovered_t = recover_parameters(rt, acc)
+    # uses the parameters passed directly via command line
+    a, v, t = args.a, args.v, args.t
 
-# saves recovered parameters to a temporary file
-results_dir = os.path.join(os.getcwd(), 'results')
-rec_file_path = os.path.join(results_dir, 'recovered_params.csv')
-with open(rec_file_path, mode='w', newline='') as file:
-    writer = csv.writer(file)
-    writer.writerow([recovered_a, recovered_v, recovered_t])
+    # recovers parameters from simulated data
+    recovered_a, recovered_v, recovered_t = recover_parameters(rt, acc)
 
-print(f"Original parameters: a={args.a}, v={args.v}, t={args.t}")
-print(f"Recovered parameters: a={recovered_a}, v={recovered_v}, t={recovered_t}")
+    # saves recovered parameters to a temporary file
+    results_dir = os.path.join(os.getcwd(), 'results')
+    rec_file_path = os.path.join(results_dir, 'recovered_params.csv')
+    with open(rec_file_path, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow([recovered_a, recovered_v, recovered_t])
+
+    print(f"Original parameters: a={args.a}, v={args.v}, t={args.t}")
+    print(f"Recovered parameters: a={recovered_a}, v={recovered_v}, t={recovered_t}")
