@@ -2,6 +2,7 @@
 ## Project assist using AI
 
 We used a simulate and recover program to analyze the EZ diffusion model. In this experiment, we used an increase of sample size to analyze the following variables. We utilize both mean squared errors (MSE) and mean biases to interpret our results:
+
     - Boundary Separation (a)
     - Drift Rate (v)
     - Non-decision time (t)
